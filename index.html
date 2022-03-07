@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <script src="//cdn.jsdelivr.net/npm/simple-crypto-js@2.5.0/dist/SimpleCrypto.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/js-base64@3.7.2/base64.min.js"></script>
+
+    <script>
+      const API_KEY = "ieifg7z6";
+      const KEY = "encrypted";
+      const PREFIX = "done";
+
+      const min = 10000;
+      const max = min + parseInt(window.location.hash.split("#")[1] || 99999);
+
+      const generate = (min, max) => Math.floor(Math.random() * max + min);
+
+      async function put() {
+        const input = document.getElementsByTagName("input")[0];
+        const password = input.value;
+        if (password.length < 5) alert("please inter correct password");
+
+        const simpleCrypto = new SimpleCrypto(generate(min, max));
+
+        const cipher = simpleCrypto.encrypt(`${PREFIX}:${password}`);
+
+        await save(cipher);
+        input.value = "";
+      }
+
+      async function find() {
+        const cipher = await get();
+        const label = document.getElementsByTagName("p")[0];
+        const write = (x) => (label.textContent = x);
+
+        const decrypt = (x) => {
+          const simpleCrypto = new SimpleCrypto(x);
+          try {
+            const decipherText = simpleCrypto.decrypt(cipher);
+            return decipherText;
+          } catch (e) {
+            return "";
+          }
+        };
+
+        const start = (i = 0) => {
+          write(((i / (max - min)) * 100).toFixed(2) + "%");
+
+          const temptNounce = generate(min, max);
+          const tempt = decrypt(temptNounce);
+
+          if (tempt.startsWith(PREFIX)) {
+            write(tempt.split(":")[1]);
+            alert(temp);
+            return;
+          } else {
+            setTimeout(() => start(i + 1), 1);
+          }
+        };
+
+        start();
+      }
+
+      const save = async (value) => {
+        localStorage.setItem(KEY, value);
+        // const val = Base64.encodeURI(value);
+
+        // // curl -X POST
+        // const url = `https://keyvalue.immanuel.co/api/KeyVal/UpdateValue/${API_KEY}/${KEY}/${val}`;
+        // const response = await fetch(url, {
+        //   method: "POST",
+        // });
+      };
+
+      const get = async () => {
+        // const responce = await fetch(
+        //   `https://keyvalue.immanuel.co/api/KeyVal/GetValue/${API_KEY}/${KEY}`
+        // );
+        // return Base64.decode(await responce.text());
+
+        return localStorage.getItem(KEY);
+      };
+    </script>
+
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TimeBox</title>
+  </head>
+  <body>
+    <h1>Timebox</h1>
+
+    <p>get your password</p>
+
+    <button onclick="find()">Decrypt</button>
+    <hr />
+
+    <input placeholder="your password here" />
+    <button onclick="put()">Encrypt</button>
+  </body>
+</html>
