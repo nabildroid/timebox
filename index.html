@@ -45,7 +45,7 @@
         const start = (i = 0) => {
           write(((i / (max - min)) * 100).toFixed(2) + "%");
 
-          const temptNounce = generate(min, max);
+          const temptNounce = min + i //generate(min, max);
           const tempt = decrypt(temptNounce);
 
           if (tempt.startsWith(PREFIX)) {
