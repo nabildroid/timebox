@@ -11,8 +11,8 @@
 
       const min = 10000;
       const max = min + parseInt(window.location.hash.split("#")[1] || 99999);
-
-      const generate = (min, max) => Math.floor(Math.random() * max + min);
+      
+      const generate = (min, max) => min + Math.floor(Math.random() * (max - min));
 
       async function put() {
         const input = document.getElementsByTagName("input")[0];
